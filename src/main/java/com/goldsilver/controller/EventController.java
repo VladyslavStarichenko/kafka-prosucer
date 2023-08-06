@@ -1,13 +1,11 @@
 package com.goldsilver.controller;
 
+import com.goldsilver.dto.Customer;
 import com.goldsilver.service.KafkaMessagePublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/producer-app")
@@ -28,6 +26,18 @@ public class EventController {
             }
 
             return ResponseEntity.ok("message was successfully published");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+
+    }
+
+    @PostMapping("/publish")
+    public ResponseEntity<?> publishEvent(@RequestBody Customer customer) {
+        try {
+           publisher.sendEventsToTopic(customer);
+            return ResponseEntity.ok("event was successfully published");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .build();
